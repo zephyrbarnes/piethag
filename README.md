@@ -49,15 +49,12 @@ Comments: There are three types of comments in this assembly language:
 
 ### Complex Data Types
 
-- `str:1000`: String data type represents a 64-bit pointer to a sequence of characters in memory.
+- `str:1000`: String data type represents a 64-bit pointer to a sequence of characters in memory along an 8-bit size value. If size exceeds 256 values becomes an array of strings. First byte is size.
 - `arr:1001`: Array data type representing a collection of the same data type. The number of elements stored as a 16-bit integer at the beginning of the array. The maximum size of an array is 65,535 elements.
 
 ### Object-Oriented Data Types
 
 - `obj:1010`: Object data type represents an instance of a class. It holds three pointers to arrays the first of which is an array of its parent classes relevant data types, the second the equivalent data for those types, and third either a pointer to the parent classes array of methods or a pointer to its own array of methods which hold a clone of the parent classes method array.
 - `cls:1011`: Class data type represents a blueprint for creating objects (Class instance). It stores a 64-bit pointer to a block of memory that contains the data for an instance of the class. This block of memory includes the values of the class's properties, as well as an array of 8-bit pointers to the class's methods.
-
-
-
 
 Registers:The assembly language uses registers to store values. The lod instruction loads a value from a register, and the sto instruction stores a value into a register. The registers are referred to as rf1, rf2, etc. in the instructions.
