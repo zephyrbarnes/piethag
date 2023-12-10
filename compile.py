@@ -1,3 +1,5 @@
+import textwrap
+
 instruct = { # Dictionary to map assembly instructions to binary code
     'lod': '0000', 'sto': '0001', 'ref': '0010', 'cnd': '0011',
     'add': '0100', 'sub': '0101', 'mul': '0110', 'div': '0111',
@@ -12,37 +14,6 @@ relevant = { # Dictionary to map registers to binary code
     'cur': '0000', 'nxt': '0001', 'top': '0010', 'bot': '0011',
     'acc': '0100', 'idx': '0101'}
 
-def lod(type, address):
-    value = relevant['cur'] = memory[address] # Store the value in the current register
-    # Determine the register based on the value type
-    if type == 'chr': register =
-    elif type == 'str':
-        if len(value) > 256: # If string exceeds 256 characters, split it into multiple strings
-            value = [value[i:i+256] for i in range(0, len(value), 256)]
-            lod('arr', len(value)) # Load the array length into the current register
-    elif type == 'fnc': register =
-    elif type == 'int': register =
-    elif type == 'bln': register =
-    elif type == 'chr': register =
-    elif type == 'flt': register =
-    elif type == 'int': register =
-    elif type == 'int': register =
-    elif type == 'int': register =
-    elif type == 'int': register =
-    elif type == 'int': register =
-    else:
-        raise ValueError(f"Invalid value type: {type}")
-    value = memory[address] # Read the value from the memory address
-
-    # Store this value in the register
-    relevant[register] = value
-
-def analyzing(line):
-    tokens = line.split() # Split the line into tokens
-    struct = tokens[0] # The first token is the instruction
-    inputs = tokens[1:] # The remaining tokens are the arguments
-    return struct, inputs
-
 def generates(struct, inputs):
     binary = instruct[struct] # Translate the instruction to binary code
     for input in inputs: # Translate each argument to binary code
@@ -53,10 +24,26 @@ def generates(struct, inputs):
 
 def compiling(input_path, output_path):
     with open(input_path, 'r') as input_file, open(output_path, 'w') as output_file:
+        prevDent = 0
+        inputs = []
+        cmnt = False
         for line in input_file:
-            line = line.strip() # Remove leading and trailing whitespace
-            if not line or line.startswith('#'): # Skip empty lines and comments
+            line = line.rstrip() # Remove trailing whitespace
+            currDent = len(line) - len(textwrap.dedent(line)) # Calculate indentation level
+            if '\\' in line:
+                cmnt = True
+                line = line[:line.find('\\')] # Keep only the part before '\\'
+            if '//' in line:
+                cmnt = False
+                line = line[line.find('//')+2:] # Keep only the part after '//'
+            if not cmnt:
                 continue
-            struct, inputs = analyzing(line) # Parse the line
-            binary = generates(struct, inputs) # Generate binary code
-            output_file.write(binary + '\n') # Write the binary code to the output file
+            if currDent > prevDent: # If the current line is indented more than the previous line
+                inputs.append(line.strip()) # Add the current line to the inputs of the previous line
+            else:
+                tkns = line.split()
+                struct = tkns[0] # The first token is the instruction
+                inputs = tkns[1:] # The remaining tokens are the arguments
+                binary = generates(struct, inputs) # Generate binary code
+                output_file.write(binary + '\n') # Write the binary code to the output file
+            prevDent = currDent # Update the previous indentation level
