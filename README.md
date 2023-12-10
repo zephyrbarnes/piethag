@@ -9,17 +9,13 @@ Comments: There are three types of comments in this assembly language:
 
 ## Primitive Functions
 
-- `lod:0000`: Load a value from a register.
-- `sto:0001`: Store a value into a register.
-- `ref:0010`: References an execution in a different part of the program.
-- `cnd:0011`: If the first operand is true, it executes the second operand.
+`lod:0000`: Load a data type from a register.   `sto:0001`: Store a value into a register.  
+`ref:0010`: Reference to function elsewhere.   `cnd:0011`: If true, execute the operand.
 
 ## Arithmetic Functions
 
-- `add:0100`: Add two values.
-- `sub:0101`: Subtract two values.
-- `mul:0110`: Multiply two values.
-- `div:0111`: Divide two values.
+`add:0100`: Add two values.     `sub:0101`: Subtract two values.  
+`mul:0110`: Multiply values.    `div:0111`: Divide two variables.
 
 ## Logical Functions
 
@@ -69,4 +65,4 @@ Comments: There are three types of comments in this assembly language:
 
 - `acc:0100`: Accumulation register. This register is used to accumulate the results of computations. In a compiler, it could be used to store the result of evaluating an expression.
 
-- `idx:0101`: The 'index' register. This register is typically used to store an index into an array or a string. In a compiler, it could be used to store the current position in a string or the index of the current element in an array.
+- `idx:0101`: The Index register. This register is typically used to store an index into an array or a string. In a compiler, it could be used to store the current position in a string or the index of the current element in an array.
