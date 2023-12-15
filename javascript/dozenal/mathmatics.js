@@ -1,53 +1,95 @@
-const bs = 12, dg = '0123456789↊↋'; // Dozenal digits
-const flr = Math.floor; function xf(d,n) {return d.indexOf(n);}
-var dx, dgt, cr, tp, rs, pd;
+const dgts = '0123456789↊↋';
+var doz, dgt, tmp, prc;
+function gP(n)   { return n.toString().split('.'); }
+function fl(n)   { return Math.floor(n);}
+function cl(n)   { return Math.ceil(n);}
+function xO(x,n) { return x.indexOf(n);}
+function num(n) { return Number(n);}
 
-function doz(n) { return String(n); }
-
-function dec(n) { rs = '';
-    if (n == 0) return '0';
-    while (n > 0) { dgt = n % 12; n = flr(n / 12);
-        rs = dg[dgt] + rs;
-    } return rs;
+function doz2Dec(n) { let d = gP(n); tmp = 0;
+    for (let i = 0; i < d[0].length; i++) { tmp = tmp * 12 + xO(dgts, d[0][i]); }
+    if(d[1]) { prc = 0;
+        for (let i = 0; i < d[1].length; i++) { prc += xO(dgts, d[1][i]) * Math.pow(12, -(i+1)); }
+        tmp += prc;
+    } return tmp;
 }
 
-function add(n1,n2) { dx, cr = 0; rs = '';
-
-    while (n1.length < n2.length) n1 = '0' + n1;
-    while (n2.length < n1.length) n2 = '0' + n2;
-
-    for (let i = n1.length - 1; i >= 0; i--) {
-        dx = xf(dg,n1[i]) + xf(dg,n2[i]) + cr;
-        cr = flr(dx / bs);
-        rs = dg[dx % bs] + rs;
-    }
-    if (cr > 0) rs = dg[cr] + rs;
-    return rs;
-}
-
-function mul(n1, n2) { rs = '0', n1l = n1.length, n2l = n2.length;
-    for (let i = n1l - 1; i >= 0; i--) { cr = 0, tp = '';
-        for (let j = n2l - 1; j >= 0; j--) {
-            pd = xf(dg,n1[i]) * xf(dg,n2[j]) + cr;
-            cr = flr(pd / bs); pd = pd % bs; tp = dg[pd] + tp;
+function dec2Doz(n, p) { let d = fl(n), f = n - d; doz = '';
+    do {
+        doz = dgts[d % 12] + doz;
+        d = fl(d / 12);
+    } while (d > 0);
+    if(f > 0) { doz += '.'; tmp = '';
+        while (f > 0) {
+            dgt = fl(f *= 12);
+            tmp += dgts[dgt];
+            f -= dgt;
         }
-        if (cr > 0) tp = dg[cr] + tp;
-        tp += '0'.repeat(n1l - 1 - i);
-        rs = add(rs, tp);
-    } return rs;
+        d = '';
+        if(xO(dgts, tmp[p]) > 5) f = 1; else f = 0;
+        for (let i = p - 1; i >= 0; i--) {
+            dgt = xO(dgts, tmp[i]) + f;
+            if(dgt >= 12) f = 1; else f = 0;
+            d = dgts[dgt %= 12] + d;
+        }
+        doz += d;
+        if(f) { d = xO(doz,'.') - 1;
+            while (f && d >= 0) {
+                dgt = xO(dgts, doz[d]) + f;
+                if(dgt >= 12) f = 1; else f = 0;
+                doz = doz.slice(0, d) + dgts[dgt %= 12] + doz.slice(d + 1);
+                d--;
+            }
+            if(f) doz = dgts[f] + doz;
+        }
+    } return doz;
 }
 
-function div(n1, n2) {
-    n1 = n1.replace('↊', 'a').replace('↋', 'b');
-    n2 = n2.replace('↊', 'a').replace('↋', 'b');
-
-    n1 = parseInt(n1, 12);
-    n2 = parseInt(n2, 12);
-
-    var qt = Math.floor(n1 / n2);
-    var rm = n1 % n2;
-
-    var dzQt = dec(qt).replace('a','↊').replace('b','↋');
-    var dzRm = dec(rm).replace('a','↊').replace('b','↋');
-    return [dzQt, dzRm];
+function add(a, b) {
+    let p = Math.max((gP(a)[1] || '').length, (gP(b)[1] || '').length);
+    return dec2Doz(doz2Dec(a) + doz2Dec(b), p);
 }
+
+function sub(a, b) {
+    let p = Math.max((gP(a)[1] || '').length, (gP(b)[1] || '').length);
+    return dec2Doz(doz2Dec(a) - doz2Dec(b), p);
+}
+
+function mul(a, b) {
+    let p = Math.min((gP(a)[1] || '').length, (gP(b)[1] || '').length);
+    return dec2Doz(doz2Dec(a) * doz2Dec(b), p);
+}
+
+function div(a, b) {
+    let p = Math.min((gP(a)[1] || '').length, (gP(b)[1] || '').length);
+    return dec2Doz(doz2Dec(a) / doz2Dec(b), p);
+}
+
+console.log(add('5', '7')); // Output: 10
+console.log(add('↊', '↋')); // Output: 19
+console.log(add('5.6', '7.4')); // Output: 10.↊
+
+console.log(sub('↋', '5')); // Output: 6
+console.log(sub('10', '↊')); // Output: 2
+console.log(sub('7.4', '5.6')); // Output: 1.↊
+
+console.log(mul('3', '4')); // Output: 10
+console.log(mul('↊', '↋')); // Output: 92
+console.log(mul('3.4', '2.6')); // Output: 8.4
+
+console.log(div('↊', '2')); // Output: 5
+console.log(div('84', '↊')); // Output: ↊
+console.log(div('↋.↊4', '2.6')); // Output: 4.9
+
+console.log(add('5.123', '-7.456')); // Output: 10.579
+console.log(add('↊.789', '↋.123')); // Output: 19.8↋0
+
+console.log(sub('↋.789', '5.123')); // Output: 6.666
+console.log(sub('10.456', '↊.789')); // Output: 1.889
+
+console.log(mul('3.123', '4.456')); // Output: 11.66↊
+console.log(mul('↊.789', '↋.123')); // Output: 9↊.17↋
+
+console.log(div('↊.789', '2.123')); // Output: 5.0↊3
+console.log(div('84.456', '↊.789')); // Output: 9.51↋
+console.log(div('↋.↊4', '2.678')); // Output: 4.79

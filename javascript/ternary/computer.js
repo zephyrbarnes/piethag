@@ -1,8 +1,10 @@
 function TernaryComputer() {
     // Initialize the memory, controller, and processor
-    let memory = new TrinaryMemory();
-    let control = new MemoryController(memory);
-    let process = new CentralProcessor(control);
+    let memory = new Memory();
+    let control = new control(memory);
+    let process = new process(control);
+
+    const memSize = 21;
 
     // Define some instructions
     let instructions = [

@@ -1,8 +1,9 @@
 const fs = require('fs');
+const enc = grimiore.Encoder(), dec = grimiore.Decoder();
 
-class CentralProcessor {
-    constructor(memoryController) {
-        this.mem = memoryController;
+class Processor {
+    constructor(control) {
+        this.mem = control;
         this.reg = new Array[27];
     }
 
@@ -58,8 +59,8 @@ class CentralProcessor {
 }
 
 function generateCombinations() {
-    const trits = ['F', '0', 'T'];
-    const length = 5;
+    const trits = ['F', 'N', 'T'];
+    const length = 2;
     const combinations = [];
 
     const helper = (current) => {

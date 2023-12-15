@@ -1,4 +1,4 @@
-class MemoryController {
+class control {
     constructor(memory) {
         this.memory = memory;
     }

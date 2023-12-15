@@ -1,6 +1,6 @@
-class TrinaryMemory {
+class Memory {
     constructor() {
-        this.memory = [];
+        this.memory = [5415450034];
     }
 
     get size() {
