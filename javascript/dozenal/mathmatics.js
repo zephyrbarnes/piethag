@@ -64,32 +64,3 @@ function div(a, b) {
     let p = Math.min((gP(a)[1] || '').length, (gP(b)[1] || '').length);
     return dec2Doz(doz2Dec(a) / doz2Dec(b), p);
 }
-
-console.log(add('5', '7')); // Output: 10
-console.log(add('↊', '↋')); // Output: 19
-console.log(add('5.6', '7.4')); // Output: 10.↊
-
-console.log(sub('↋', '5')); // Output: 6
-console.log(sub('10', '↊')); // Output: 2
-console.log(sub('7.4', '5.6')); // Output: 1.↊
-
-console.log(mul('3', '4')); // Output: 10
-console.log(mul('↊', '↋')); // Output: 92
-console.log(mul('3.4', '2.6')); // Output: 8.4
-
-console.log(div('↊', '2')); // Output: 5
-console.log(div('84', '↊')); // Output: ↊
-console.log(div('↋.↊4', '2.6')); // Output: 4.9
-
-console.log(add('5.123', '-7.456')); // Output: 10.579
-console.log(add('↊.789', '↋.123')); // Output: 19.8↋0
-
-console.log(sub('↋.789', '5.123')); // Output: 6.666
-console.log(sub('10.456', '↊.789')); // Output: 1.889
-
-console.log(mul('3.123', '4.456')); // Output: 11.66↊
-console.log(mul('↊.789', '↋.123')); // Output: 9↊.17↋
-
-console.log(div('↊.789', '2.123')); // Output: 5.0↊3
-console.log(div('84.456', '↊.789')); // Output: 9.51↋
-console.log(div('↋.↊4', '2.678')); // Output: 4.79
