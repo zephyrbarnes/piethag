@@ -1,13 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Webpage</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <canvas id="cv"></canvas>
-
-    <script src="main.js"></script>
+    <div>
+		<canvas></canvas>
+	</div>
+    <script>
+        const cv = document.createElement('canvas'), ct = cv.getContext('2d'),
+        cw = cv.width = window.innerWidth, ch = cv.height = window.innerHeight;
+    </script>
+    <script src="javascript/handle/handler.js"></script>
+    <script src="pengine.js"></script>
 </body>
 </html>
