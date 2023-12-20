@@ -1,4 +1,4 @@
-var near = 0.1, far = 1000, fov = 90, ratio = cw / ch, debug = false, prc = 0;
+var near = 1, far = 1000, fov = 120, ratio = cw / ch, debug = false, prc = 0;
 
 class Camera {constructor( Movement, Position = new V, Rotation = new V) {
     Object.assign(this, {/*Position*/P:Position,/*Rotation*/R:Rotation,
@@ -6,7 +6,7 @@ class Camera {constructor( Movement, Position = new V, Rotation = new V) {
 
 function drawTrigonometry(f) {
     ct.fillStyle = f.rgba; ct.strokeStyle = f.rgba;
-    if(debug) ct.strokeStyle = 'pink';
+    if(debug) ct.strokeStyle = `rgba(255, 0, 255, 255)`;
     ct.beginPath();
     ct.moveTo(((f.a.x + cw) / 2), ((f.a.y + ch) / 2));
     ct.lineTo(((f.b.x + cw) / 2), ((f.b.y + ch) / 2));
@@ -16,66 +16,65 @@ function drawTrigonometry(f) {
 }
 
 function render(world) {
-    var cameraTarget = new V(0, 0, 1),
-        cameraMatrix = rotate(new V(0, cam.R.y, 0));
-        cam.D = matMulVec( cameraMatrix, cameraTarget);
-        cameraTarget = vecAddVec(cam.P, cam.D);
-    const cameraLocate = quickInverse(pointCamera( cam.P, cameraTarget, cam.U));
-    const cameraRotate = rotate(new V(cam.R.x, 0, 0));
-    const pane = project(), faces = [];
+    var camT = new V(0, 0, 1),                                  // camT = Camera Target
+        camM = rotate(new V(0, cam.R.y, 0));                    // camM = Camera Matrix
+        cam.D = matMulVec( camM, camT);                         // cam.D = Camera Direction
+        camT = vecAddVec(cam.P, cam.D);
+    const camP = quickInverse(pointCamera(cam.P, camT, cam.U)); // camP = Camera Position
+    const camR = rotate(new V(cam.R.x, 0, 0));                  // camR = Camera Rotation
+    const pCam = project(), faces = [];                         // pCam = Project Camera
+
+    function camera(p) { return matMulVec(pCam, p)}
+    function checkW(p) { if(p.w != 0) { return divVector(p,p.w)}}
+    function shades(c,s,d) { return fx(abs((c - s) * d + s), 0)}
+    function objMat(v, o) { return vecAddVec(matMulVec(rotate(o.R), vecMulVec(v, o.S)), o.P)} // Scales, Rotates, and Positions
+    function howFar(a,b,c) { return (sqrt(inProduct(a, a)) + sqrt(inProduct(b, b)) + sqrt(inProduct(c, c))) / 3}
+    function adjust(a,b,c) { return {a:mMulV(camR, mMulV(camP, a)), b:mMulV(camR, mMulV(camP, b)), c:mMulV(camR, mMulV(camP, c))}}
     for(let obj of world) {
         const vectors = [];
-        const rotated = rotate(obj.R);
-        for(let vertex of obj.V) {
-            const scaledVertex = vecMulVec( vertex, obj.S);
-            const rotateVertex = matMulVec( rotated, scaledVertex);
-            const offsetVertex = vecAddVec( rotateVertex, obj.P);
-            vectors.push(offsetVertex); }
-        for(let face of obj.F) {
-            let a = vectors[face.a], b = vectors[face.b], c = vectors[face.c];
+        for(let vertex of obj.V) { vectors.push(objMat(vertex, obj))}
+        for(let f of obj.F) {
+            let a = vectors[f.a], b = vectors[f.b], c = vectors[f.c];
+            let normal = crossProd(vecSubVec(b, a), vecSubVec(c, a)); normal = normalize(normal);
             let ad = vecSubVec(a, cam.P), bd = vecSubVec(b, cam.P), cd = vecSubVec(c, cam.P);
-            let d = (sqrt(inProduct(ad, ad)) + sqrt(inProduct(bd, bd)) + sqrt(inProduct(cd, cd))) / 3;
-            let normal = crossProd( vecSubVec(b, a), vecSubVec(c, a));
-                normal = normalize(normal);
-            let nl = inProduct(normal, ad);
-            if(d < 100) prc=8; else prc=0;
-            if(nl < 0) {
-                a = matMulVec( cameraLocate, a), b = matMulVec( cameraLocate, b), c = matMulVec( cameraLocate, c);
-                a = matMulVec( cameraRotate, a), b = matMulVec( cameraRotate, b), c = matMulVec( cameraRotate, c);
-                let cl = [],
-                result = clip(new V( 0, 0, near),new V( 0, 0, 1), a, b, c);
+            if(inProduct(normal, ad) < 0) {
+                ({a, b, c} = adjust(a, b, c));
+                let d = howFar(ad, bd, cd);
+                if(d < 100) prc = 8; else prc = 0;
+                let cl = [], result = clip(new V(0,0, near),new V(0,0,1), new F(a,b,c));
                 cl[0] = result.t1; cl[1] = result.t2;
-                for(var i = 0; i < result.n; i++) {
-                    var dp = fx(inProduct( normal, light));
-                    var [red,grn,blu,opc] = [face.r,face.g,face.bl,face.o];
-                    red = fx(abs((red - 20) * dp + 20), 0);
-                    grn = fx(abs((grn - 50) * dp + 50), 0);
-                    blu = fx(abs((blu - 50) * dp + 50), 0);
-                    a = matMulVec(pane, cl[i].a),
-                    b = matMulVec(pane, cl[i].b),
-                    c = matMulVec(pane, cl[i].c);
-                    if(a.w != 0) { a = divVector(a,a.w); }
-                    if(b.w != 0) { b = divVector(b,b.w); }
-                    if(c.w != 0) { c = divVector(c,c.w); }
-                    faces.push(new Face(a,b,c,d,`rgb(${red}, ${grn}, ${blu}, ${opc})`));
+                for(var n = 0; n < result.n; n++) {
+                    var dp = fx(inProduct(normal, light),0);
+                    let [rd, gr, bl, ap] = f.rgba.slice(5, -1).split(',').map(Number);
+                    faces.push(new F(
+                        checkW(camera(cl[n].a)),
+                        checkW(camera(cl[n].b)),
+                        checkW(camera(cl[n].c)),
+                        shades(rd, 0, dp),shades(gr, 0, dp),shades(bl, 0, dp),ap,d))
                 }
             }
         }
     }
     faces.sort((a, b) => b.d - a.d);
-    const rasterTrig = [], h = ch - 1, w = cw - 1;
     for(let f of faces) {
-        for (var p = 0; p < 4; p++) { let r = {}, c = [];
-			switch(p) {
-                case 0: r = clip(new V(), new V( 0, 1, 0), f.a, f.b, f.c); break;
-                case 1:	r = clip(new V(), new V( 1, 0, 0), f.a, f.b, f.c); break;
-                case 2:	r = clip(new V(0,h,0), new V( 0,-1, 0), f.a, f.b, f.c); break;
-                case 3:	r = clip(new V(w,0,0), new V(-1, 0, 0), f.a, f.b, f.c); break;
+        const h = ch - 1, w = cw - 1;
+        const rasterFace = f; var num = 1;
+        const clips = [], rasterTrig = []; rasterTrig.push(rasterFace);
+        for (var p = 0; p < 4; p++) {
+            if(num > 0) { num--;
+                var result = {};
+                var test = rasterTrig[rasterTrig.length - 1];
+                switch(p) {
+                    case 0: result = clip(new V( 0,-h, 0), new V( 0, 1, 0), test); break;
+                    case 1: result = clip(new V( 0, h, 0), new V( 0,-1, 0), test); break;
+                    case 2: result = clip(new V(-w, 0, 0), new V( 1, 0, 0), test); break;
+                    case 3: result = clip(new V( w, 0, 0), new V(-1, 0, 0), test); break;
+                }
+                clips[0] = result.t1; clips[1] = result.t2;
+                for(let n = 0; n < result.n; n++) { rasterTrig.push(clips[n]); }
             }
-            c[0] = r.t1; c[0].d = f.d; c[0].rgba = f.rgba;
-            c[1] = r.t2; c[1].d = f.d; c[1].rgba = f.rgba;
-            for(let i = 0; i < r.n; i++) { rasterTrig.push(c[i]); }
+            num = rasterTrig.length;
         }
+        for(let f of rasterTrig) { drawTrigonometry(f); }
     }
-    for(let f of rasterTrig) { drawTrigonometry(f); }
 }

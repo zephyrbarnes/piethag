@@ -3,6 +3,8 @@ var EM = function() { return [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]}
 var IM = function() { return [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]}
 function fx(v, n) { if(!n) {n = prc} return pf(v.toFixed(n))}
 function xO(x, n) { return x.indexOf(n)}
+const mMulV = matMulVec, nrml = normalize;
+    
 
 async function loadTexts(f) {
     try { var r = await fetch(f), t;
@@ -16,7 +18,7 @@ function matMulVec(m,v) {
     fx(x * m[0][1] + y * m[1][1] + z * m[2][1] + w * m[3][1]),
     fx(x * m[0][2] + y * m[1][2] + z * m[2][2] + w * m[3][2]),
     fx(x * m[0][3] + y * m[1][3] + z * m[2][3] + w * m[3][3]))}
-    
+
 function divVector( v, k) { return new V(fx(v.x / k), fx(v.y / k), fx(v.z / k))}
 function mulVector( v, k) { return new V(fx(v.x * k), fx(v.y * k), fx(v.z * k))}
 function vecMulVec( v1, v2) { return new V( fx(v1.x * v2.x), fx(v1.y * v2.y), fx(v1.z * v2.z))}
@@ -24,7 +26,7 @@ function vecDivVec( v1, v2) { return new V( fx(v1.x / v2.x), fx(v1.y / v2.y), fx
 function vecAddVec( v1, v2) { return new V( fx(v1.x + v2.x), fx(v1.y + v2.y), fx(v1.z + v2.z))}
 function vecSubVec( v1, v2) { return new V( fx(v1.x - v2.x), fx(v1.y - v2.y), fx(v1.z - v2.z))}
     
-function normalize(v) { return divVector( v, fx(sqrt(inProduct( v, v))))} const nrml = normalize;
+function normalize(v) { return divVector( v, fx(sqrt(inProduct( v, v))))}
 function inProduct( v1, v2) { return ((v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z))}
 function middlePnt( v1, v2) { return new V(((v1.x + v2.x) / 2), ((v1.y + v2.y) / 2), ((v1.z + v2.z) / 2))}
 function crossProd( l1, l2) { return new V(((l1.y*l2.z) - (l1.z*l2.y)), ((l1.z*l2.x) - (l1.x*l2.z)), ((l1.x*l2.y) - (l1.y*l2.x)))}

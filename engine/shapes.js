@@ -1,6 +1,5 @@
 class V { constructor( x = 0, y = 0, z = 0, w = 1) { Object.assign( this, {x:x, y:y, z:z, w:w})}}
-class F { constructor( a, b, c, r = 0, g = 150, bl = 255, o = 255) { Object.assign( this, {a:a, b:b, c:c, r:r, g:g, bl:bl, o:o})}}
-class Face { constructor( a, b, c, d, rgba) { Object.assign( this, {a:a, b:b, c:c, d:d, rgba:rgba})}}
+class F { constructor( a, b, c, rd = 0, gr = 150, bl = 255, ap = 255, d) { Object.assign( this, {a:a, b:b, c:c, rgba:`rgba(${rd}, ${gr}, ${bl}, ${ap})`, d:d})}}
 
 class Cube { constructor( P = new V, R = new V, S = V( 1, 1, 1)) { prc = 1;
     Object.assign( this, {/*Position*/P:P,/*Rotation*/R:R,/*Scale*/S:S, V:[ // Vertex Array

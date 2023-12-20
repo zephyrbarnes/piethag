@@ -37,22 +37,27 @@ function intersect( plane_p, plane_n, sttLine, endLine) {
     return vecAddVec( sttLine, lineSect)}
 const sect = intersect;
 
-function clip( plane_p, plane_n, a, b, c) {
-    var pn = normalize(plane_n), pp = plane_p,
-        result = { n:1, t1: new F(), t2: new F() };
-    function dist(p) { return ((pn.x*p.x) + (pn.y*p.y) + (pn.z*p.z) - inProduct(pn, pp))}
-    var ad = dist(a), bd = dist(b), cd = dist(c),
-        iP = [], oP = [], iN = 0, oN = 0;
-    if(ad >= 0) iP[iN++] = a; else oP[oN++] = a;
-    if(bd >= 0) iP[iN++] = b; else oP[oN++] = b;
-    if(cd >= 0) iP[iN++] = c; else oP[oN++] = c;
+function clip(plane_p, plane_n, face) {
+    var pn = normalize(plane_n), pp = plane_p, result = {n:1, t1: new F(), t2: new F() };
+    function dist(v) { return ((pn.x*v.x) + (pn.y*v.y) + (pn.z*v.z) - inProduct(pn, pp))}
+
+    var ad = dist(face.a), bd = dist(face.b), cd = dist(face.c);
+    var iP = [], oP = [], iN = 0, oN = 0;
+
+    if(ad >= 0) iP[iN++] = face.a; else oP[oN++] = face.a;
+    if(bd >= 0) iP[iN++] = face.b; else oP[oN++] = face.b;
+    if(cd >= 0) iP[iN++] = face.c; else oP[oN++] = face.c;
+
+    if(iN == 0) { result.n = 0; return result}
+    if(iN == 3) { result.t1 = face; return result}
     if(iN == 1 && oN == 2) {
-        result.t1 = new F(iP[0], sect(pp, pn, iP[0], oP[0]), sect(pp, pn, iP[0], oP[1])); return result}
-    if(iN == 2 && oN == 1) { result.n = 2;
+        result.t1 = new F(iP[0], sect(pp, pn, iP[0], oP[0]), sect(pp, pn, iP[0], oP[1]));
+        result.t1.rgba = face.rgba; result.t1.d = face.d; return result}
+    if(iN == 2 && oN == 1) {
         result.t1 = new F(iP[0], iP[1], sect(pp, pn, iP[0], oP[0]));
-        result.t2 = new F(iP[1], result.t1.c, sect(pp, pn, iP[1], oP[0])); return result}
-    if(iN == 3) { result.t1 = new F(a,b,c); return result}
-    if(iN == 0) { result.n = 0; return result}}
+        result.t2 = new F(iP[1], result.t1.c, sect(pp, pn, iP[1], oP[0]));
+        result.t1.rgba = result.t2.rgba = face.rgba; result.n = 2;
+        result.t1.d = result.t2.d = face.d; return result}}
 
 function quickInverse(m) { var r = new IM;
     for(var i = 0; i < 3; i++) {
@@ -60,4 +65,4 @@ function quickInverse(m) { var r = new IM;
     r[3][0] = fx(-((m[3][0]*r[0][0]) + (m[3][1]*r[1][0]) + (m[3][2]*r[2][0])));
     r[3][1] = fx(-((m[3][0]*r[0][1]) + (m[3][1]*r[1][1]) + (m[3][2]*r[2][1])));
     r[3][2] = fx(-((m[3][0]*r[0][2]) + (m[3][1]*r[1][2]) + (m[3][2]*r[2][2])));
-    return r; }
+    return r}
