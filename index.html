@@ -1,5 +1,4 @@
 <html>
-
 <head>
 	<title></title>
 	<style>
@@ -15,9 +14,11 @@
 <body>
 	<canvas id="cv"></canvas>
 	<script>const cv = document.getElementById('cv'), ct = cv.getContext('2d'), cw = cv.width = window.innerWidth, ch = cv.height = window.innerHeight;</script>
-	<script src="utility.js"></script>
-    <script src="input.js"></script>
-	<script src="engine.js"></script>
+	<script src="engine/helper.js"></script>
+    <script src="engine/shapes.js"></script>
+    <script src="engine/inputs.js"></script>
+    <script src="engine/output.js"></script>
+    <script src="engine/render.js"></script>
+	<script src="engine/engine.js"></script>
 </body>
-
 </html>
