@@ -1,19 +1,19 @@
 var near = 1, far = 1000, fov = 120, ratio = cw / ch, debug = false, prc = 0;
 
-class Camera {constructor( Movement, Position = new V, Rotation = new V) {
-    Object.assign(this, {/*Position*/P:Position,/*Rotation*/R:Rotation,
-    /*Movement*/M:Movement,/*Direction*/Direction:new V(0,0,1),/*Plumb*/U:new V(0,1,0)}); }}
+class Camera {
+    constructor( Movement, Position = new V, Rotation = new V) { Object.assign(this,
+        {/*Position*/P:Position,/*Rotation*/R:Rotation,/*Movement*/M:Movement,
+         /*Direction*/ Direction:new V(0,0,1), /*Plumb*/ U:new V(0,1,0)}); }}
 
 function drawTrigonometry(f) {
-    ct.fillStyle = f.rgba; ct.strokeStyle = f.rgba;
-    if(debug) ct.strokeStyle = `rgba(255, 0, 255, 255)`;
+    ct.fillStyle = f.rgba;
+    if(debug) ct.strokeStyle = `rgba(255, 0, 255, 255)`; else ct.strokeStyle = f.rgba;
     ct.beginPath();
     ct.moveTo(((f.a.x + cw) / 2), ((f.a.y + ch) / 2));
     ct.lineTo(((f.b.x + cw) / 2), ((f.b.y + ch) / 2));
     ct.lineTo(((f.c.x + cw) / 2), ((f.c.y + ch) / 2));
     ct.lineTo(((f.a.x + cw) / 2), ((f.a.y + ch) / 2));
-    ct.stroke(); ct.fill(); ct.closePath();
-}
+    ct.stroke(); ct.fill(); ct.closePath();}
 
 function render(world) {
     var camT = new V(0, 0, 1),                                  // camT = Camera Target
@@ -26,7 +26,7 @@ function render(world) {
 
     function camera(p) { return matMulVec(pCam, p)}
     function checkW(p) { if(p.w != 0) { return divVector(p,p.w)}}
-    function shades(c,s,d) { return fx(abs((c - s) * d + s), 0)}
+    function shades(c,s,d) { return abs((c - s) * d + s)}
     function objMat(v, o) { return vecAddVec(matMulVec(rotate(o.R), vecMulVec(v, o.S)), o.P)} // Scales, Rotates, and Positions
     function howFar(a,b,c) { return (sqrt(inProduct(a, a)) + sqrt(inProduct(b, b)) + sqrt(inProduct(c, c))) / 3}
     function adjust(a,b,c) { return {a:mMulV(camR, mMulV(camP, a)), b:mMulV(camR, mMulV(camP, b)), c:mMulV(camR, mMulV(camP, c))}}
@@ -44,17 +44,11 @@ function render(world) {
                 let cl = [], result = clip(new V(0,0, near),new V(0,0,1), new F(a,b,c));
                 cl[0] = result.t1; cl[1] = result.t2;
                 for(var n = 0; n < result.n; n++) {
-                    var dp = fx(inProduct(normal, light),0);
+                    var dp = inProduct(normal, light);
                     let [rd, gr, bl, ap] = f.rgba.slice(5, -1).split(',').map(Number);
                     faces.push(new F(
-                        checkW(camera(cl[n].a)),
-                        checkW(camera(cl[n].b)),
-                        checkW(camera(cl[n].c)),
-                        shades(rd, 0, dp),shades(gr, 0, dp),shades(bl, 0, dp),ap,d))
-                }
-            }
-        }
-    }
+                        checkW(camera(cl[n].a)), checkW(camera(cl[n].b)), checkW(camera(cl[n].c)),
+                        shades(rd, 0, dp), shades(gr, 0, dp), shades(bl, 0, dp), ap, d))}}}}
     faces.sort((a, b) => b.d - a.d);
     for(let f of faces) {
         const h = ch - 1, w = cw - 1;
@@ -75,6 +69,4 @@ function render(world) {
             }
             num = rasterTrig.length;
         }
-        for(let f of rasterTrig) { drawTrigonometry(f); }
-    }
-}
+        for(let f of rasterTrig) { drawTrigonometry(f); }}}

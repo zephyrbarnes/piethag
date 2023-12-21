@@ -1,24 +1,17 @@
 <html>
 <head>
 	<title></title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-			background-color: black;
-		}
-	</style>
+	<style></style>
 </head>
 
-<body>
+<body style="overflow: hidden; background-color: black;">
 	<canvas id="cv"></canvas>
 	<script>
         const cv = document.getElementById('cv'), ct = cv.getContext('2d'),
               cw = cv.width = window.innerWidth, ch = cv.height = window.innerHeight;
     </script>
 	<script src="engine/helper.js"></script>
-    <script src="engine/shapes.js"></script>
+    <script src="engine/object.js"></script>
     <script src="engine/inputs.js"></script>
     <script src="engine/output.js"></script>
     <script src="engine/render.js"></script>
