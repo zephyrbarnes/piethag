@@ -9,14 +9,8 @@ class Cube { constructor( P = new V, R = new V, S = V( 1, 1, 1)) { prc = 1;
     new V( 1, 1, 1), new V( 1,-1, 1), new V(-1, 1, 1), new V(-1,-1, 1)], F:[  // Face Array
     new F( 0, 1, 2), new F( 0, 2, 3), /*SOUTH*/ new F( 4, 3, 2), new F( 3, 4, 5), /*EASTS*/
     new F( 5, 4, 6), new F( 5, 6, 7), /*NORTH*/ new F( 7, 6, 1), new F( 7, 1, 0), /*WESTS*/
-    new F( 1, 6, 4), new F( 1, 4, 2), /*ABOVE*/ new F( 5, 7, 0), new F( 5, 0, 3)],/*BELOW*/T:[
-    new T( 0, 1), new T( 0, 0), new T( 1, 0), new T( 0, 1), new T( 1, 0), new T( 1, 1),
-    new T( 0, 1), new T( 0, 0), new T( 1, 0), new T( 0, 1), new T( 1, 0), new T( 1, 1),
-    new T( 0, 1), new T( 0, 0), new T( 1, 0), new T( 0, 1), new T( 1, 0), new T( 1, 1),
-    new T( 0, 1), new T( 0, 0), new T( 1, 0), new T( 0, 1), new T( 1, 0), new T( 1, 1),
-    new T( 0, 1), new T( 0, 0), new T( 1, 0), new T( 0, 1), new T( 1, 0), new T( 1, 1),
-    new T( 0, 1), new T( 0, 0), new T( 1, 0), new T( 0, 1), new T( 1, 0), new T( 1, 1)
-    ]}); world.push(this)}}
+    new F( 1, 6, 4), new F( 1, 4, 2), /*ABOVE*/ new F( 5, 7, 0), new F( 5, 0, 3)],/*BELOW*/
+    }); world.push(this)}}
 
 class Mesh { constructor(path, P = new V, R = new V, S = new V( 1, 1, 1)) { prc = 3;
     Object.assign(this, {/*Position*/P:P,/*Rotation*/R:R,/*Scale*/S:S,/*Vector Array*/V:[],/*Faces*/F:[]});
