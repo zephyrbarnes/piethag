@@ -1,18 +1,33 @@
-class T { constructor(x = 0, y = 0) { Object.assign( this, {x:x, y:y})}}
+class T { constructor(x = 0, y = 0, w = 1) { Object.assign( this, {x:x, y:y, w:w})}}
 class V { constructor(x = 0, y = 0, z = 0, w = 1) { Object.assign( this, {x:x, y:y, z:z, w:w})}}
-class F { constructor(i, j, k, r = 0, g = 150, b = 255, a = 255, d){ Object.assign( this,
-        { i:i, j:j, k:k, rgba:`rgba(${r},${g},${b},${a})`, d:d})}}
+class F { constructor(i, j, k, t, r = 0, g = 150, b = 255, a = 255, d){ Object.assign( this,
+        { i:i, j:j, k:k, t:t, rgba:`rgba(${r},${g},${b},${a})`, d:d})}}
 
-class Cube { constructor( P = new V, R = new V, S = V( 1, 1, 1)) { prc = 1;
+class Cube { constructor(P = new V, R = new V, S = V(1,1,1), textures = false) {
     Object.assign( this, {/*Position*/P:P,/*Rotation*/R:R,/*Scale*/S:S, V:[ // Vertex Array
     new V(-1,-1,-1), new V(-1, 1,-1), new V( 1, 1,-1), new V( 1,-1,-1),
     new V( 1, 1, 1), new V( 1,-1, 1), new V(-1, 1, 1), new V(-1,-1, 1)], F:[  // Face Array
-    new F( 0, 1, 2), new F( 0, 2, 3), /*SOUTH*/ new F( 4, 3, 2), new F( 3, 4, 5), /*EASTS*/
-    new F( 5, 4, 6), new F( 5, 6, 7), /*NORTH*/ new F( 7, 6, 1), new F( 7, 1, 0), /*WESTS*/
-    new F( 1, 6, 4), new F( 1, 4, 2), /*ABOVE*/ new F( 5, 7, 0), new F( 5, 0, 3)],/*BELOW*/
-    }); world.push(this)}}
+    new F(0,1,2),new F(0,2,3),   /*SOUTH*/new F(4,3,2),new F(3,4,5),   /*EASTS*/
+    new F(5,4,6),new F(5,6,7),   /*NORTH*/new F(7,6,1),new F(7,1,0),   /*WESTS*/
+    new F(1,6,4),new F(1,4,2),   /*ABOVE*/new F(5,7,0),new F(5,0,3)]});/*BELOW*/
+    for(var n = 0; n < this.F.length; n += 2) {
+        this.F[n].t = [new T(0,1),new T(0,0),new T(1,0)]; this.F[n+1].t = [new T(0,1),new T(1,0),new T(1,1)]}
+    if(textures) {
+        this.F[ 0].t = [new T(0,1),new T(0,0),new T(1,0)];
+        this.F[ 1].t = [new T(0,1),new T(1,0),new T(1,1)];
+        this.F[ 2].t = [new T(1,1),new T(1,0),new T(2,0)];
+        this.F[ 3].t = [new T(1,1),new T(2,0),new T(2,1)];
+        this.F[ 4].t = [new T(2,1),new T(2,0),new T(3,0)];
+        this.F[ 5].t = [new T(2,1),new T(3,0),new T(3,1)];
+        this.F[ 6].t = [new T(3,1),new T(3,0),new T(4,0)];
+        this.F[ 7].t = [new T(3,1),new T(4,0),new T(4,1)];
+        this.F[ 8].t = [new T(4,1),new T(4,0),new T(5,0)];
+        this.F[ 9].t = [new T(4,1),new T(5,0),new T(5,1)];
+        this.F[10].t = [new T(5,1),new T(5,0),new T(6,0)];
+        this.F[11].t = [new T(5,1),new T(6,0),new T(6,1)]}
+    world.push(this)}}
 
-class Mesh { constructor(path, P = new V, R = new V, S = new V( 1, 1, 1)) { prc = 3;
+class Mesh { constructor(path, P = new V, R = new V, S = new V(1,1,1)) {
     Object.assign(this, {/*Position*/P:P,/*Rotation*/R:R,/*Scale*/S:S,/*Vector Array*/V:[],/*Faces*/F:[]});
     loadTexts(path).then( txt => { if (txt !== null) { var lines = txt.split("\n");
     for(var line of lines) { var s = line.split(" "); /*String*/
@@ -20,7 +35,7 @@ class Mesh { constructor(path, P = new V, R = new V, S = new V( 1, 1, 1)) { prc 
         else if(s[0] == "v") this.V.push(new V(pf(s[1]), pf(s[2]), pf(s[3])));     /*Fill Vector Array*/
 }}}); world.push(this)}}
 
-class IcoSphere {constructor( P = new V, R = new V, S = new V(1,1,1), I = 0) { var t = (1 + sqrt(5)) / 2; prc = 2;
+class IcoSphere {constructor( P = new V, R = new V, S = new V(1,1,1), I = 0) { var t = (1 + sqrt(5)) / 2;
     Object.assign( this, {/*Position*/P:P,/*Rotation*/R:R,/*Scale*/S:S,/*Iterations*/I:I,/*Fill Vector Array*/
     V: [nrml(new V(-1, t, 0)), nrml(new V( 1, t, 0)), nrml(new V(-1,-t, 0)), nrml(new V( 1,-t, 0)),
         nrml(new V( 0,-1, t)), nrml(new V( 0, 1, t)), nrml(new V( 0,-1,-t)), nrml(new V( 0, 1,-t)),

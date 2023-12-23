@@ -33,38 +33,58 @@ function pointCamera( position, target, plumb) { const
     m[3][0] = ( p.x); m[3][1] = ( p.y); m[3][2] = ( p.z); // m[3][3] = 1
 return m}
 
-function intersect( plane_p, plane_n, sttLine, endLine) {
+function intersect( plane_p, plane_n, sttLine, endLine, t) {
     var pn = normalize(plane_n), pp = plane_p, pd = inProduct( pn, pp), // Plane normal, point, dist
-        ad = inProduct( sttLine, pn), bd = inProduct( endLine, pn), // Directions
-        t = (pd - ad) / (bd - ad);
+        ad = inProduct( sttLine, pn), bd = inProduct( endLine, pn); // Directions
+    t = (pd - ad) / (bd - ad);
         endLine = vecSubVec( endLine, sttLine);
     var lineSect = mulVector( endLine, t);
     return vecAddVec( sttLine, lineSect)}
 const sect = intersect;
 
 function clip(plane_p, plane_n, f) {
-    var pn = normalize(plane_n), pp = plane_p, result = {n:1, t1: new F(), t2: new F() };
+    var pn = normalize(plane_n), pp = plane_p, rs = {n:1, t1: new F(), t2: new F() };
     function dist(v) { return ((pn.x*v.x) + (pn.y*v.y) + (pn.z*v.z) - inProduct(pn, pp))}
 
     var ad = dist(f.i), bd = dist(f.j), cd = dist(f.k);
     var iP = [], oP = [], iN = 0, oN = 0;
+    var iT = [], oT = [], iNT = 0, oNT = 0;
 
-    if(ad >= 0) iP[iN++] = f.i; else oP[oN++] = f.i;
-    if(bd >= 0) iP[iN++] = f.j; else oP[oN++] = f.j;
-    if(cd >= 0) iP[iN++] = f.k; else oP[oN++] = f.k;
+    if(ad >= 0) { iP[iN++] = f.i; iT[iNT++] = f.t[0]} else { oP[oN++] = f.i; oT[oNT++] = f.t[0]}
+    if(bd >= 0) { iP[iN++] = f.j; iT[iNT++] = f.t[1]} else { oP[oN++] = f.j; oT[oNT++] = f.t[1]}
+    if(cd >= 0) { iP[iN++] = f.k; iT[iNT++] = f.t[2]} else { oP[oN++] = f.k; oT[oNT++] = f.t[2]}
 
-    if(iN == 0) { result.n = 0; return result}
-    if(iN == 3) { result.t1 = f; return result}
+    if(iN == 0) { rs.n = 0; return rs}
+    if(iN == 3) { rs.t1 = f; return rs}
     if(iN == 1 && oN == 2) {
-        result.t1 = new F(iP[0], sect(pp, pn, iP[0], oP[0]), sect(pp, pn, iP[0], oP[1]));
-        if(debug) result.t1.rgba = dBugColor; else result.t1.rgba = f.rgba;
-        result.t1.d = f.d; return result}
+        if(debug) rs.t1.rgba = dBugColor; else rs.t1.rgba = f.rgba;
+        var t; rs.t1.p[0] = iP[0]; rs.t1.t[0] = iT[0];
+        rs.t1.p[1] = sect(pp, pn, iP[0], oP[0], t);
+        rs.t1.t[1].x = t*(oT[0].x - iT[0].x) + iT[0].x;
+        rs.t1.t[1].y = t*(oT[0].y - iT[0].y) + iT[0].y;
+        rs.t1.t[1].w = t*(oT[0].w - iT[0].w) + iT[0].w;
+        rs.t1.p[2] = sect(pp, pn, iP[0], oP[1], t);
+        rs.t1.t[2].x = t*(oT[0].x - iT[0].x) + iT[0].x;
+        rs.t1.t[2].y = t*(oT[0].y - iT[0].y) + iT[0].y;
+        rs.t1.t[2].w = t*(oT[0].w - iT[0].w) + iT[0].w;
+        rs.t1.d = f.d; rs.t1.t = f.t;
+        return rs}
     if(iN == 2 && oN == 1) {
-        result.t1 = new F(iP[0], iP[1], sect(pp, pn, iP[0], oP[0]));
-        result.t2 = new F(iP[1], result.t1.k, sect(pp, pn, iP[1], oP[0]));
-        if(debug) result.t1.rgba =  result.t2.rgba = dBugColor;
-        else { result.t1.rgba = result.t2.rgba = f.rgba} result.n = 2;
-        result.t1.d = result.t2.d = f.d; return result}}
+        if(debug) rs.t1.rgba = rs.t2.rgba = dBugColor; else { rs.t1.rgba = rs.t2.rgba = f.rgba}
+        var t; rs.t1.p[0] = iP[0]; rs.t1.p[1] = iP[1];
+        rs.t1.t[0] = iT[0]; rs.t1.t[1] = iT[1];
+        rs.t1.p[2] = sect(pp, pn, iP[0], oP[0], t);
+        rs.t1.t[2].x = t*(oT[0].x - iT[0].x) + iT[0].x;
+        rs.t1.t[2].y = t*(oT[0].y - iT[0].y) + iT[0].y;
+        rs.t1.t[2].w = t*(oT[0].w - iT[0].w) + iT[0].w;
+        rs.t2.p[0] = iP[1]; rs.t2.p[1] = rs.t1.p[2];
+        rs.t2.t[0] = iT[1]; rs.t2.t[1] = rs.t1.t[2];
+        rs.t2.p[2] = sect(pp, pn, iP[1], oP[0], t);
+        rs.t2.t[2].x = t*(oT[0].x - iT[1].x) + iT[1].x;
+        rs.t2.t[2].y = t*(oT[0].y - iT[1].y) + iT[1].y;
+        rs.t2.t[2].w = t*(oT[0].w - iT[1].w) + iT[1].w;
+        rs.n = 2; rs.t1.d = rs.t2.d = f.d;
+        return rs}}
 
 function quickInverse(m) { var r = new IM;
     for(var n = 0; n < 3; n++) { for(var p = 0; p < 3; p++) { r[n][p] = m[p][n]}}
