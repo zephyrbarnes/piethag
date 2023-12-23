@@ -24,7 +24,7 @@ function render(world) {
     function checkW(p) { if(p.w != 0) { return divVector(p,p.w)} }
     function shades(c,s,d) { return abs((c - s) * d + s) }
     function howFar(i,j,k) { return (sqrt(inProduct(i,i)) + sqrt(inProduct(j,j)) + sqrt(inProduct(k,k))) / 3 }
-    function adjust(i,j,k) { return {i:mMulV(camR, mMulV(camP,i)),j:mMulV(camR, mMulV(camP,j)),k:mMulV(camR, mMulV(camP,k))} }
+    function adjust(v) { return mMulV(camR, mMulV(camP,v))} }
     for(let obj of world) { const vt = [];
         for(let v of obj.V) { vt.push(objMat(v, obj))}
         for(let f of obj.F) {
@@ -32,10 +32,11 @@ function render(world) {
             let normal = crossProd(vecSubVec(j, i), vecSubVec(k, i)); normal = normalize(normal);
             let id = vecSubVec(i, cam.P);
             if(inProduct(normal, id) < 0) {
-                let d = howFar(id, vecSubVec(j, cam.P), vecSubVec(k, cam.P));
+                var tempF = Object.assign(f, {i:adjust(i), j:adjust(j), k:adjust(k), t:f.t});
+                var d = howFar(id, vecSubVec(j,cam.P), vecSubVec(k,cam.P));
                 if(d < 100) prc = 8; else prc = 0;
                 ({i,j,k} = adjust(i,j,k));
-                let cl = [], rs = clip(new V(0,0,near),new V(0,0,1), new F(i,j,k));
+                let cl = [], rs = clip(new V(0,0,near),new V(0,0,1), tempF);
                 cl[0] = rs.t1; cl[1] = rs.t2;
                 for(var n = 0; n < rs.n; n++) {
                     var dp = inProduct(normal, light);
@@ -62,4 +63,4 @@ function render(world) {
             }
             num = rasterTrig.length;
         }
-        for(let f of rasterTrig) { drawTrigonometry(f)}}}
+        for(let f of rasterTrig) { drawTrigonometry(f)}}

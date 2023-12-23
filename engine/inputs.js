@@ -1,4 +1,4 @@
-const f = false, t = true;
+const f = false;
 class controller {
     keyState = {
         27: f, /*EXITS*/ 87: f, /*W KEY*/
@@ -27,7 +27,7 @@ class controller {
 var keyH = new controller(), key = keyH.keyState;
 
 function keysCheck() {
-    if(key[13]) debug = t; else debug = f;
+    if(key[13]) debug = true; else debug = f;
 
     if(!key[87] && key[83] || key[87] && !key[83] || !key[38] && key[40] || key[38] && !key[40]) {
         camF = mulVector(cam.D,cam.S);

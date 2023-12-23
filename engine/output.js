@@ -50,6 +50,7 @@ function clip(plane_p, plane_n, f) {
     var iP = [], oP = [], iN = 0, oN = 0;
     var iT = [], oT = [], iNT = 0, oNT = 0;
 
+    console.log(f.t);
     if(ad >= 0) { iP[iN++] = f.i; iT[iNT++] = f.t[0]} else { oP[oN++] = f.i; oT[oNT++] = f.t[0]}
     if(bd >= 0) { iP[iN++] = f.j; iT[iNT++] = f.t[1]} else { oP[oN++] = f.j; oT[oNT++] = f.t[1]}
     if(cd >= 0) { iP[iN++] = f.k; iT[iNT++] = f.t[2]} else { oP[oN++] = f.k; oT[oNT++] = f.t[2]}
