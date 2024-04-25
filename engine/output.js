@@ -72,7 +72,7 @@ export function clip(plane_p, plane_n, f) {
             result.t1.t[2].x = t*(oT[0].x - iT[0].x) + iT[0].x;
             result.t1.t[2].y = t*(oT[0].y - iT[0].y) + iT[0].y;
             result.t1.t[2].w = t*(oT[0].w - iT[0].w) + iT[0].w;
-            result.t1.d = f.d; result.t1.t = f.t;
+            result.t1.d = f.d; result.t1.t = f.t; result.t1.I = f.I;
             return result}
         if(iN == 2 && oN == 1) {
             if(debug) result.t1.rgba = result.t2.rgba = dBugColor; else { result.t1.rgba = result.t2.rgba = f.rgba}
@@ -88,8 +88,9 @@ export function clip(plane_p, plane_n, f) {
             result.t2.t[2].x = t*(oT[0].x - iT[1].x) + iT[1].x;
             result.t2.t[2].y = t*(oT[0].y - iT[1].y) + iT[1].y;
             result.t2.t[2].w = t*(oT[0].w - iT[1].w) + iT[1].w;
-            result.n = 2; result.t1.d = result.t2.d = f.d;
-            return result}
+            result.t1.d = result.t2.d = f.d;
+            result.t1.I = result.t2.I = f.I;
+            result.n = 2; return result}
     } else {
         if(iN == 1 && oN == 2) {
             result.t1 = new F(iP[0], sect(pp, pn, iP[0], oP[0]), sect(pp, pn, iP[0], oP[1]));
@@ -99,8 +100,10 @@ export function clip(plane_p, plane_n, f) {
             result.t1 = new F(iP[0], iP[1], sect(pp, pn, iP[0], oP[0]));
             result.t2 = new F(iP[1], result.t1.k, sect(pp, pn, iP[1], oP[0]));
             if(debug) result.t1.rgba =  result.t2.rgba = dBugColor;
-            else { result.t1.rgba = result.t2.rgba = f.rgba} result.n = 2;
-            result.t1.d = result.t2.d = f.d; return result}
+            else { result.t1.rgba = result.t2.rgba = f.rgba}
+            result.t1.d = result.t2.d = f.d;
+            result.t1.I = result.t2.I = f.I;
+            result.n = 2; return result}
         }
     }
 

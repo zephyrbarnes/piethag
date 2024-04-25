@@ -32,13 +32,13 @@ export default class controller {
     
         if (!this.key[87] && this.key[83] || this.key[87] && !this.key[83] ||
             !this.key[38] && this.key[40] || this.key[38] && !this.key[40]) {
-            var cameraFacing = mulVector(this.camera.D,this.camera.S);
+            var cameraFacing = mulVector(this.camera.Direction,this.camera.S);
             if(this.key[87] || this.key[38]) this.camera.P = vecSubVec(this.camera.P, cameraFacing);
             if(this.key[83] || this.key[40]) this.camera.P = vecAddVec(this.camera.P, cameraFacing);
         }
         if (!this.key[65] && this.key[68] || this.key[65] && !this.key[68] ||
             !this.key[37] && this.key[39] || this.key[37] && !this.key[39]) {
-            let cameraX = crossProd(this.camera.D,this.camera.U);
+            let cameraX = crossProd(this.camera.Direction,this.camera.U);
                 cameraX = normalize(cameraX);
                 cameraX = mulVector(cameraX,this.camera.S);
             if(this.key[65] || this.key[37]) this.camera.P = vecAddVec(this.camera.P, cameraX);

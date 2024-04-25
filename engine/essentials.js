@@ -4,7 +4,8 @@ const cvs = document.getElementById('canvas'), ctx = cvs.getContext('2d'),
     abs = Math.abs, min = Math.min, max = Math.max, pf = parseFloat, dg = pi / 180;
 var near = 1, far = 1000, fov = 120, ratio = cw / ch, debug = false;
 
-class F { constructor(i,j,k,t,tx, r = 0, g = 150, b = 255, a = 255, d){ Object.assign(this, {i:i, j:j, k:k, t:t || [new T,new T,new T], rgba:`rgba(${r},${g},${b},${a})`, d:d, tx:'null'})}}
+class F { constructor(i,j,k,t,image, tx, r = 0, g = 150, b = 255, a = 255, d) {
+    Object.assign(this, {i:i, j:j, k:k, t:t || [new T,new T,new T], image:image, rgba:`rgba(${r},${g},${b},${a})`, d:d, tx:'null'})}}
 class V { constructor(x = 0, y = 0, z = 0, w = 1) { Object.assign( this, {x:x, y:y, z:z, w:w})}}
 class T { constructor(x = 0, y = 0, w = 1) { Object.assign( this, {x:x, y:y, w:w})}}
 

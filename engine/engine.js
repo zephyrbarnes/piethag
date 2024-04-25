@@ -8,7 +8,7 @@ var world = [];
 // var egg = new Mesh('engine/objects/egg.obj',new V(0,0,0), new V(0,0,0), new V(1,1,1));
 // var orb = new IcoSphere(new V(2,0,0), new V(0,0,0), new V(1,1,1), 1);
 function New(obj) { world.push(obj); return obj }
-var cube = New(new Cube(new V(0,0,0), new V(0,0,0), new V(1,1,1)));
+var cube = New(new Cube(new V(0,0,0), new V(0,0,0), new V(1,1,1)), './mogul.png');
 var camera = new Camera(0.05,new V(0,0,-10),new V(180,180,0));
 var light = normalize(camera.P);
 

@@ -1,9 +1,11 @@
 export default class Cube {
-    constructor(Position, Rotation, Scale) {
+    constructor(Position, Rotation, Scale, imagePath, textured) {
         this.P = Position || new V;
         this.R = Rotation || new V;
         this.S = Scale || new V(1, 1, 1);
-        this.tx = false;
+        this.IP = imagePath || null;
+        if(this.IP) { this.I = new Image(); this.I.src = this.IP } else { this.I = null }
+        this.tx = textured || false;
 
         this.V = [ // Vertex Array
             new V(-1,-1,-1), new V(-1, 1,-1), new V( 1, 1,-1), new V( 1,-1,-1),

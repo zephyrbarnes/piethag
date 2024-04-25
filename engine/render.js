@@ -2,16 +2,24 @@ import * as o from './output.js';
 
 export default function render(world, camera, light) {
     function drawTrigonometry(face) {
-        ctx.fillStyle = face.rgba;
-        if(debug) ctx.strokeStyle = `rgba(255,0,255,255)`;
-        else ctx.strokeStyle = face.rgba 
-        ctx.beginPath();
-        ctx.moveTo(((face.i.x + cw) / 2), ((face.i.y + ch) / 2));
-        ctx.lineTo(((face.j.x + cw) / 2), ((face.j.y + ch) / 2));
-        ctx.lineTo(((face.k.x + cw) / 2), ((face.k.y + ch) / 2));
-        ctx.lineTo(((face.i.x + cw) / 2), ((face.i.y + ch) / 2));
-        ctx.stroke(); ctx.fill(); ctx.closePath()
+        if(face.I) {
+            if(face.j.y < face.i.y) { swap(face.i, face.j); swap(face.t[0], face.t[1])}
+            if(face.k.y < face.i.y) { swap(face.i, face.k); swap(face.t[0], face.t[2])}
+            if(face.k.y < face.j.y) { swap(face.j, face.k); swap(face.t[1], face.t[2])}
+        } else {
+            ctx.fillStyle = face.rgba;
+            if(debug) ctx.strokeStyle = `rgba(255,0,255,255)`;
+            else ctx.strokeStyle = face.rgba;
+            ctx.beginPath();
+            ctx.moveTo(((face.i.x + cw) / 2), ((face.i.y + ch) / 2));
+            ctx.lineTo(((face.j.x + cw) / 2), ((face.j.y + ch) / 2));
+            ctx.lineTo(((face.k.x + cw) / 2), ((face.k.y + ch) / 2));
+            ctx.lineTo(((face.i.x + cw) / 2), ((face.i.y + ch) / 2));
+            ctx.stroke(); ctx.fill(); ctx.closePath()
         }
+    }
+
+    function swap(a, b) { var temp = a; a = b; b = temp; }
 
     var cameraTarget = new V(0, 0, 1);
     var cameraMatrix = o.rotate(new V(0, camera.R.y, 0));
@@ -50,6 +58,7 @@ export default function render(world, camera, light) {
                         i:checkW(project(cl[n].i)),
                         j:checkW(project(cl[n].j)),
                         k:checkW(project(cl[n].k)),
+                        image: object.I,
                         d:distance, tx:face.tx});
                     faces.push(cl[n])
                 }
@@ -68,18 +77,10 @@ export default function render(world, camera, light) {
                 var result = {};
                 var clipFace = resterizing[resterizing.length - 1];
                 switch(p) {
-                    case 0:
-                        result = o.clip(new V( 0,-(ch - 1), 0), new V( 0, 1, 0), clipFace);
-                        break;
-                    case 1:
-                        result = o.clip(new V( 0, (ch - 1), 0), new V( 0,-1, 0), clipFace);
-                        break;
-                    case 2:
-                        result = o.clip(new V(-(cw - 1), 0, 0), new V( 1, 0, 0), clipFace);
-                        break;
-                    case 3:
-                        result = o.clip(new V( (cw - 1), 0, 0), new V(-1, 0, 0), clipFace);
-                        break;
+                    case 0: result = o.clip(new V( 0,-(ch - 1), 0), new V( 0, 1, 0), clipFace); break;
+                    case 1: result = o.clip(new V( 0, (ch - 1), 0), new V( 0,-1, 0), clipFace); break;
+                    case 2: result = o.clip(new V(-(cw - 1), 0, 0), new V( 1, 0, 0), clipFace); break;
+                    case 3: result = o.clip(new V( (cw - 1), 0, 0), new V(-1, 0, 0), clipFace); break;
                 }
                 clips[0] = result.t1;
                 clips[1] = result.t2;
